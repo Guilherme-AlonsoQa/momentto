@@ -95,7 +95,13 @@ p:last-child { margin-bottom: 0; }
   flex-shrink: 0;
 }
 
-.brand img { width: 40px; height: 40px; }
+.brand img {
+  height: 48px;
+  width: auto;
+  mix-blend-mode: multiply;
+}
+
+.brand > span { display: none; }
 
 .site-nav {
   display: flex;
