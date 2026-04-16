@@ -1,11 +1,12 @@
 const fs = require("fs");
 const path = require("path");
 
-// Em Lambda (Netlify Functions), LAMBDA_TASK_ROOT aponta para a raiz do ZIP da function.
-// O ZIP da function tem templates/ na raiz junto com backend/ e node_modules/.
+// Em Lambda (Netlify Functions), LAMBDA_TASK_ROOT aponta para a raiz do bundle da function.
+// O Netlify inclui os templates via included_files = ["frontend/templates/**"],
+// então eles ficam em LAMBDA_TASK_ROOT/frontend/templates/.
 // Localmente, os templates ficam em frontend/templates/ (dois níveis acima de backend/services/).
 const templatesRoot = process.env.LAMBDA_TASK_ROOT
-  ? path.join(process.env.LAMBDA_TASK_ROOT, "templates")
+  ? path.join(process.env.LAMBDA_TASK_ROOT, "frontend", "templates")
   : path.join(__dirname, "..", "..", "frontend", "templates");
 
 function escapeHtml(value) {

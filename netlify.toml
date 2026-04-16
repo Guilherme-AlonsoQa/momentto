@@ -1,5 +1,5 @@
 [build]
-  publish = "."
+  publish = "frontend"
   functions = "netlify/functions"
 
 [[redirects]]
@@ -8,7 +8,7 @@
   status = 200
 
 [functions]
-  included_files = ["templates/**"]
+  included_files = ["frontend/templates/**"]
 
 [functions."api"]
   external_node_modules = ["express", "multer", "archiver", "qrcode", "nodemailer", "dotenv", "serverless-http"]
