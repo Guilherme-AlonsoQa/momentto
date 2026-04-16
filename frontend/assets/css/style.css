@@ -1180,6 +1180,32 @@ p:last-child { margin-bottom: 0; }
   background: rgba(255, 253, 248, 0.8);
   border: 1px solid var(--border);
   box-shadow: 0 4px 12px rgba(70, 56, 30, 0.08);
+  position: relative;
+}
+
+.photo-remove-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(180, 60, 60, 0.88);
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: background 150ms, transform 150ms;
+}
+
+.photo-remove-btn:hover {
+  background: #b92222;
+  transform: scale(1.12);
 }
 
 .photo-preview-grid img {

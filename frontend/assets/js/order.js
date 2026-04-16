@@ -5,6 +5,9 @@
 // ---- Plano selecionado ----
 let selectedPlan = "basico";
 
+// ---- Fotos acumuladas ----
+let collectedFiles = [];
+
 const PLAN_CONFIG = {
   basico:  { maxPhotos: 3,  price: "R$ 29,90",  label: "Básico"  },
   premium: { maxPhotos: 10, price: "R$ 59,90",  label: "Premium" }
@@ -87,14 +90,12 @@ function applyPlan(plan) {
   if (pixAmountLabel)     pixAmountLabel.textContent     = cfg.price;
   if (pixMockAmount)      pixMockAmount.textContent      = cfg.price;
 
-  // Se já há fotos selecionadas, revalidar
-  if (photosInput?.files?.length) {
-    const files = Array.from(photosInput.files);
-    if (files.length > cfg.maxPhotos) {
-      setStatus(`O ${cfg.label} aceita no máximo ${cfg.maxPhotos} foto${cfg.maxPhotos > 1 ? "s" : ""}. Selecione novamente.`, "error");
-      photosInput.value = "";
-      renderPhotoPreview([]);
-    }
+  // Se já há fotos acumuladas, revalidar
+  if (collectedFiles.length > cfg.maxPhotos) {
+    setStatus(`O ${cfg.label} aceita no máximo ${cfg.maxPhotos} foto${cfg.maxPhotos > 1 ? "s" : ""}. As fotos excedentes foram removidas.`, "error");
+    collectedFiles = collectedFiles.slice(0, cfg.maxPhotos);
+    syncInputFiles();
+    renderPhotoPreview(collectedFiles);
   }
 }
 
@@ -163,17 +164,16 @@ document.getElementById("step2Next")?.addEventListener("click", () => {
 });
 
 document.getElementById("step3Next")?.addEventListener("click", () => {
-  const photos    = Array.from(photosInput?.files || []);
   const maxPhotos = PLAN_CONFIG[selectedPlan].maxPhotos;
 
-  if (photos.length === 0) {
+  if (collectedFiles.length === 0) {
     setStatus("Envie pelo menos uma foto.", "error");
     return;
   }
 
-  if (photos.length > maxPhotos) {
+  if (collectedFiles.length > maxPhotos) {
     setStatus(
-      `O Plano ${PLAN_CONFIG[selectedPlan].label} aceita no máximo ${maxPhotos} foto${maxPhotos > 1 ? "s" : ""}. Selecione novamente.`,
+      `O Plano ${PLAN_CONFIG[selectedPlan].label} aceita no máximo ${maxPhotos} foto${maxPhotos > 1 ? "s" : ""}. Remova as excedentes.`,
       "error"
     );
     return;
@@ -200,7 +200,14 @@ function syncTemplatePreview() {
 
 templateRadios.forEach((radio) => radio.addEventListener("change", syncTemplatePreview));
 
-// ---- Preview de fotos ----
+// ---- Sincroniza o input com collectedFiles ----
+function syncInputFiles() {
+  const dt = new DataTransfer();
+  collectedFiles.forEach((f) => dt.items.add(f));
+  photosInput.files = dt.files;
+}
+
+// ---- Preview de fotos (com botão de remover) ----
 function renderPhotoPreview(files) {
   photoPreview.innerHTML = "";
 
@@ -210,39 +217,67 @@ function renderPhotoPreview(files) {
   }
 
   const maxPhotos = PLAN_CONFIG[selectedPlan].maxPhotos;
-  previewCounter.textContent = `${files.length} de ${maxPhotos} foto${maxPhotos > 1 ? "s" : ""} — pronta${files.length > 1 ? "s" : ""} para envio.`;
+  const remaining = maxPhotos - files.length;
+  previewCounter.textContent = `${files.length} de ${maxPhotos} foto${maxPhotos > 1 ? "s" : ""} — pronta${files.length > 1 ? "s" : ""} para envio.${remaining > 0 ? ` Você ainda pode adicionar ${remaining} mais.` : ""}`;
 
-  files.forEach((file) => {
-    const figure  = document.createElement("figure");
-    const image   = document.createElement("img");
-    const caption = document.createElement("figcaption");
+  files.forEach((file, index) => {
+    const figure    = document.createElement("figure");
+    const removeBtn = document.createElement("button");
+    const image     = document.createElement("img");
+    const caption   = document.createElement("figcaption");
+
+    removeBtn.type = "button";
+    removeBtn.className = "photo-remove-btn";
+    removeBtn.setAttribute("aria-label", `Remover ${file.name}`);
+    removeBtn.textContent = "×";
+    removeBtn.onclick = () => {
+      collectedFiles.splice(index, 1);
+      syncInputFiles();
+      setStatus("");
+      renderPhotoPreview(collectedFiles);
+    };
 
     image.src = URL.createObjectURL(file);
     image.alt = file.name;
     image.onload = () => URL.revokeObjectURL(image.src);
     caption.textContent = file.name;
 
-    figure.append(image, caption);
+    figure.classList.add("photo-preview-figure");
+    figure.append(removeBtn, image, caption);
     photoPreview.appendChild(figure);
   });
 }
 
-photosInput?.addEventListener("change", () => {
-  const files     = Array.from(photosInput.files || []);
+// ---- Mescla novos arquivos com os já selecionados ----
+function mergeIntoCollected(newFiles) {
   const maxPhotos = PLAN_CONFIG[selectedPlan].maxPhotos;
 
-  if (files.length > maxPhotos) {
+  // Evitar duplicatas por nome+tamanho
+  const toAdd = newFiles.filter(
+    (nf) => !collectedFiles.some((ef) => ef.name === nf.name && ef.size === nf.size)
+  );
+
+  const merged = [...collectedFiles, ...toAdd];
+
+  if (merged.length > maxPhotos) {
     setStatus(
-      `O Plano ${PLAN_CONFIG[selectedPlan].label} aceita no máximo ${maxPhotos} foto${maxPhotos > 1 ? "s" : ""}. Selecione novamente.`,
+      `O Plano ${PLAN_CONFIG[selectedPlan].label} aceita no máximo ${maxPhotos} foto${maxPhotos > 1 ? "s" : ""}. As excedentes foram ignoradas.`,
       "error"
     );
-    photosInput.value = "";
-    renderPhotoPreview([]);
-    return;
+    return merged.slice(0, maxPhotos);
   }
 
   setStatus("");
-  renderPhotoPreview(files);
+  return merged;
+}
+
+photosInput?.addEventListener("change", () => {
+  const newFiles = Array.from(photosInput.files || []);
+  if (!newFiles.length) return;
+
+  collectedFiles = mergeIntoCollected(newFiles);
+  syncInputFiles();
+  renderPhotoPreview(collectedFiles);
 });
 
 // ---- Preview do comprovante ----
@@ -314,13 +349,12 @@ orderForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   resultCard?.classList.add("hidden");
 
-  const photos    = Array.from(photosInput?.files || []);
   const proof     = proofInput?.files?.[0];
   const message   = orderForm.elements.message?.value.trim();
   const maxPhotos = PLAN_CONFIG[selectedPlan].maxPhotos;
 
-  if (photos.length === 0)          { setStatus("Envie pelo menos uma foto.", "error"); return; }
-  if (photos.length > maxPhotos)    { setStatus(`Máximo ${maxPhotos} foto${maxPhotos > 1 ? "s" : ""} para o Plano ${PLAN_CONFIG[selectedPlan].label}.`, "error"); return; }
+  if (collectedFiles.length === 0)          { setStatus("Envie pelo menos uma foto.", "error"); return; }
+  if (collectedFiles.length > maxPhotos)    { setStatus(`Máximo ${maxPhotos} foto${maxPhotos > 1 ? "s" : ""} para o Plano ${PLAN_CONFIG[selectedPlan].label}.`, "error"); return; }
   if (!proof)                       { setStatus("Envie o comprovante de pagamento Pix.", "error"); return; }
   if (message.length < 20)          { setStatus("A mensagem precisa ter no mínimo 20 caracteres.", "error"); return; }
 
@@ -407,24 +441,12 @@ photoDropZone?.addEventListener("drop", (e) => {
   photoDropZone.style.borderColor = "";
   photoDropZone.style.background  = "";
 
-  const files     = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
-  const maxPhotos = PLAN_CONFIG[selectedPlan].maxPhotos;
+  const newFiles = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
+  if (!newFiles.length) { setStatus("Apenas imagens são aceitas.", "error"); return; }
 
-  if (!files.length) { setStatus("Apenas imagens são aceitas.", "error"); return; }
-  if (files.length > maxPhotos) {
-    setStatus(
-      `O Plano ${PLAN_CONFIG[selectedPlan].label} aceita no máximo ${maxPhotos} foto${maxPhotos > 1 ? "s" : ""}. Selecione até ${maxPhotos}.`,
-      "error"
-    );
-    return;
-  }
-
-  const dt = new DataTransfer();
-  files.forEach((f) => dt.items.add(f));
-  photosInput.files = dt.files;
-
-  setStatus("");
-  renderPhotoPreview(files);
+  collectedFiles = mergeIntoCollected(newFiles);
+  syncInputFiles();
+  renderPhotoPreview(collectedFiles);
 });
 
 photoDropZone?.addEventListener("click", () => photosInput?.click());
