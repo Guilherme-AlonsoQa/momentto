@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash('/c/Program Files/nodejs/npm.cmd' install -g netlify-cli)",
+      "Bash('/c/Program Files/nodejs/npm.cmd' install --save-dev netlify-cli)",
+      "Bash('/c/Program Files/nodejs/npm.cmd' install netlify-cli --save-dev)",
+      "Bash(powershell -Command ':*)",
+      "Bash(\"/c/Program Files/nodejs/node.exe\" \"/c/Program Files/nodejs/node_modules/npm/bin/npm-cli.js\" install netlify-cli --save-dev)",
+      "Bash(\"/c/Program Files/nodejs/node.exe\" \"/c/Program Files/nodejs/node_modules/npm/bin/npm-cli.js\" pack netlify-cli --dry-run)",
+      "Bash(\"/c/Program Files/nodejs/node.exe\" \"/c/Program Files/nodejs/node_modules/npm/bin/npm-cli.js\" view netlify-cli version)",
+      "Bash(\"/c/Program Files/nodejs/node.exe\" deploy.js)"
+    ]
+  }
+}

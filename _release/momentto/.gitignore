@@ -1,0 +1,10 @@
+node_modules/
+backend/.env
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/generated/*
+!backend/generated/.gitkeep
+momentto.zip
+
+# Local Netlify folder
+.netlify

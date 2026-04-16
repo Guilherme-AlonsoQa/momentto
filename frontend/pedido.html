@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Momentto | Presente digital com QR Code</title>
+    <meta name="description" content="Escolha um modelo, envie fotos e sua dedicatória, confirme o Pix e receba a página pronta com QR Code por e-mail em minutos.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+  </head>
+  <body class="order-page">
+
+    <header class="site-header">
+      <a class="brand" href="/">
+        <img src="/assets/logo.svg" alt="Logo Momentto">
+        <span>Momentto</span>
+      </a>
+      <nav class="site-nav">
+        <a href="/">Início</a>
+        <a href="/#modelos">Modelos</a>
+        <a href="/#faq">FAQ</a>
+      </nav>
+    </header>
+
+    <main class="order-layout order-layout-premium">
+
+      <!-- SELEÇÃO DE PLANO -->
+      <section class="plan-selector-section">
+        <div class="plan-selector-heading">
+          <p class="eyebrow">Escolha seu plano</p>
+          <h1>Qual experiência você quer criar?</h1>
+        </div>
+        <div class="plan-selector-grid" id="planSelectorGrid">
+
+          <div class="plan-option plan-option-active" data-plan="basico" id="planBasico" role="button" tabindex="0">
+            <div class="plan-option-inner">
+              <p class="plan-name">Básico</p>
+              <div class="plan-price-row">
+                <span class="plan-currency">R$</span>
+                <strong class="plan-amount">29</strong>
+                <span class="plan-cents">,90</span>
+              </div>
+              <p class="plan-sub">Pix único · sem mensalidade</p>
+              <ul class="plan-list">
+                <li>Até 3 fotos na galeria</li>
+                <li>Mensagem personalizada</li>
+                <li>Link permanente</li>
+                <li>QR Code no e-mail</li>
+              </ul>
+              <div class="plan-check" aria-hidden="true">✓ Selecionado</div>
+            </div>
+          </div>
+
+          <div class="plan-option" data-plan="premium" id="planPremium" role="button" tabindex="0">
+            <div class="plan-badge-top">Mais completo</div>
+            <div class="plan-option-inner">
+              <p class="plan-name">Premium</p>
+              <div class="plan-price-row">
+                <span class="plan-currency">R$</span>
+                <strong class="plan-amount">59</strong>
+                <span class="plan-cents">,90</span>
+              </div>
+              <p class="plan-sub">Pix único · sem mensalidade</p>
+              <ul class="plan-list">
+                <li>Até 10 fotos na galeria</li>
+                <li><strong>Slideshow animado</strong> das fotos</li>
+                <li>Mensagem personalizada</li>
+                <li>Link permanente</li>
+                <li>QR Code no e-mail</li>
+              </ul>
+              <div class="plan-check" aria-hidden="true">✓ Selecionado</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- INTRO -->
+      <section class="order-intro order-intro-premium">
+        <div class="order-intro-copy">
+          <p class="eyebrow">Pedido em página única</p>
+          <h2 style="font-family:var(--font-display);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:600;letter-spacing:-0.02em;margin:0 0 10px;">Crie seu Momentto agora.</h2>
+          <p>
+            Escolha o modelo, preencha os dados, envie as fotos e confirme o pagamento via Pix.
+            A página é gerada automaticamente e o link chega no seu e-mail em menos de 5 minutos.
+          </p>
+          <div class="mini-benefits">
+            <span>Entrega automática</span>
+            <span>Prévia visual antes do envio</span>
+            <span>Link permanente + QR Code</span>
+          </div>
+        </div>
+        <aside class="order-side-card">
+          <p class="eyebrow">Como funciona</p>
+          <ol class="side-steps">
+            <li>Escolha o plano ideal acima</li>
+            <li>Selecione o modelo para a ocasião</li>
+            <li>Preencha nomes, data e mensagem</li>
+            <li>Envie <span id="sidePhotoHint">até 3 fotos</span> do presente</li>
+            <li>Pague <span id="sidePriceHint">R$ 29,90</span> via Pix e anexe o comprovante</li>
+            <li>Receba o link e o QR Code por e-mail ✓</li>
+          </ol>
+        </aside>
+      </section>
+
+      <!-- STEP INDICATOR -->
+      <div class="step-indicator" id="stepIndicator">
+        <div class="step-item step-active" data-step="1">
+          <span class="step-num">1</span>
+          <span class="step-label">Modelo</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" data-step="2">
+          <span class="step-num">2</span>
+          <span class="step-label">Dados</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" data-step="3">
+          <span class="step-num">3</span>
+          <span class="step-label">Fotos</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" data-step="4">
+          <span class="step-num">4</span>
+          <span class="step-label">Pagamento</span>
+        </div>
+      </div>
+
+      <!-- FORMULÁRIO -->
+      <section class="order-shell">
+        <form id="orderForm" class="order-form" enctype="multipart/form-data" novalidate>
+          <input type="hidden" name="plan" id="planInput" value="basico">
+
+          <!-- PASSO 1: MODELO -->
+          <div class="form-step" id="step1">
+            <fieldset class="template-selector">
+              <legend>Escolha o modelo</legend>
+              <div class="template-selector-grid">
+
+                <label class="template-option">
+                  <input type="radio" name="template" value="namorados" checked>
+                  <span class="template-option-card template-love">
+                    <span class="template-option-preview preview-love-photo"></span>
+                    <strong>Namorados</strong>
+                    <small>Dourado + rosa suave</small>
+                    <em>Romântico, íntimo e luminoso.</em>
+                  </span>
+                </label>
+
+                <label class="template-option">
+                  <input type="radio" name="template" value="pais">
+                  <span class="template-option-card template-fathers">
+                    <span class="template-option-preview preview-father-photo"></span>
+                    <strong>Dia dos Pais</strong>
+                    <small>Azul marinho + dourado</small>
+                    <em>Sóbrio, forte e afetivo.</em>
+                  </span>
+                </label>
+
+                <label class="template-option">
+                  <input type="radio" name="template" value="maes">
+                  <span class="template-option-card template-mothers">
+                    <span class="template-option-preview preview-mother-photo"></span>
+                    <strong>Dia das Mães</strong>
+                    <small>Lilás + dourado</small>
+                    <em>Delicado, acolhedor e elegante.</em>
+                  </span>
+                </label>
+
+                <label class="template-option">
+                  <input type="radio" name="template" value="amizade">
+                  <span class="template-option-card template-friendship">
+                    <span class="template-option-preview preview-friendship-photo"></span>
+                    <strong>Amizade</strong>
+                    <small>Âmbar + dourado</small>
+                    <em>Caloroso, vibrante e afetivo.</em>
+                  </span>
+                </label>
+
+                <label class="template-option">
+                  <input type="radio" name="template" value="aniversario">
+                  <span class="template-option-card template-birthday">
+                    <span class="template-option-preview preview-birthday-photo"></span>
+                    <strong>Aniversário</strong>
+                    <small>Roxo + dourado</small>
+                    <em>Festivo, elegante e emocionante.</em>
+                  </span>
+                </label>
+
+              </div>
+            </fieldset>
+
+            <!-- PREVIEW DO MODELO -->
+            <section class="sample-preview-panel">
+              <div class="preview-panel-copy">
+                <p class="eyebrow">Como sua página pode ficar</p>
+                <h2>Uma composição pensada para emocionar na abertura do link.</h2>
+                <p>A estrutura segue esse padrão: capa com nome, mensagem dedicada, galeria de fotos e assinatura. O conteúdo final é o seu.</p>
+              </div>
+              <div class="sample-preview-stage" id="samplePreviewStage">
+                <article class="sample-preview-card template-love" data-template-preview="namorados">
+                  <div class="sample-preview-media preview-love-photo"></div>
+                  <div class="sample-preview-body">
+                    <p class="preview-kicker">Namorados</p>
+                    <h3>Mariana</h3>
+                    <p>Um design romântico para abrir no celular e guardar no coração.</p>
+                  </div>
+                </article>
+                <article class="sample-preview-card template-fathers hidden" data-template-preview="pais">
+                  <div class="sample-preview-media preview-father-photo"></div>
+                  <div class="sample-preview-body">
+                    <p class="preview-kicker">Dia dos Pais</p>
+                    <h3>Meu herói</h3>
+                    <p>Uma homenagem elegante, forte e cheia de memória afetiva.</p>
+                  </div>
+                </article>
+                <article class="sample-preview-card template-mothers hidden" data-template-preview="maes">
+                  <div class="sample-preview-media preview-mother-photo"></div>
+                  <div class="sample-preview-body">
+                    <p class="preview-kicker">Dia das Mães</p>
+                    <h3>Com amor</h3>
+                    <p>Um visual delicado para mensagens de carinho e gratidão.</p>
+                  </div>
+                </article>
+                <article class="sample-preview-card template-friendship hidden" data-template-preview="amizade">
+                  <div class="sample-preview-media preview-friendship-photo"></div>
+                  <div class="sample-preview-body">
+                    <p class="preview-kicker">Amizade</p>
+                    <h3>Meu amigo(a)</h3>
+                    <p>Um visual caloroso para celebrar laços de amizade verdadeira.</p>
+                  </div>
+                </article>
+                <article class="sample-preview-card template-birthday hidden" data-template-preview="aniversario">
+                  <div class="sample-preview-media preview-birthday-photo"></div>
+                  <div class="sample-preview-body">
+                    <p class="preview-kicker">Aniversário</p>
+                    <h3>Parabéns!</h3>
+                    <p>Um visual festivo e elegante para celebrar a data especial.</p>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <button type="button" class="button step-next-btn" id="step1Next">Continuar com esse modelo →</button>
+          </div>
+
+          <!-- PASSO 2: DADOS -->
+          <div class="form-step hidden" id="step2">
+            <div class="step-section-title">
+              <h2>Dados do presente</h2>
+              <p>Preencha as informações que vão aparecer na página.</p>
+            </div>
+
+            <div class="form-grid">
+              <label class="field">
+                <span>Nome de quem recebe <em class="required-mark">*</em></span>
+                <input type="text" name="recipientName" placeholder="Ex.: Mariana" required autocomplete="off">
+              </label>
+              <label class="field">
+                <span>Nome de quem envia <em class="required-mark">*</em></span>
+                <input type="text" name="senderName" placeholder="Ex.: Lucas" required autocomplete="off">
+              </label>
+              <label class="field">
+                <span>Data especial</span>
+                <input type="text" name="specialDate" placeholder="Ex.: 12 de junho de 2025" autocomplete="off">
+              </label>
+              <label class="field">
+                <span>Seu e-mail para receber o link <em class="required-mark">*</em></span>
+                <input type="email" name="email" placeholder="voce@email.com" required autocomplete="email">
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Mensagem / Dedicatória <em class="required-mark">*</em></span>
+              <textarea
+                name="message"
+                rows="8"
+                minlength="20"
+                placeholder="Escreva uma dedicatória emocionante. Seja à vontade — esta é a parte mais especial da página! (mínimo 20 caracteres)"
+                required
+              ></textarea>
+              <small id="msgCounter" class="char-counter">0 caracteres</small>
+            </label>
+
+            <div class="step-nav">
+              <button type="button" class="button button-secondary step-back-btn" data-back="1">← Voltar</button>
+              <button type="button" class="button step-next-btn" id="step2Next">Continuar →</button>
+            </div>
+          </div>
+
+          <!-- PASSO 3: FOTOS -->
+          <div class="form-step hidden" id="step3">
+            <div class="step-section-title">
+              <h2>Fotos do presente</h2>
+              <p id="photoStepHint">Envie até 3 fotos. Elas vão aparecer na galeria da página gerada.</p>
+            </div>
+
+            <label class="field upload-field upload-drop" id="photoDropZone">
+              <span>Fotos do Momentto <em class="required-mark">*</em></span>
+              <div class="upload-drop-inner">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+                </svg>
+                <p>Arraste as fotos aqui ou clique para selecionar</p>
+                <small id="photoDropHint">JPG, PNG, WEBP — até 3 fotos, 10MB cada</small>
+              </div>
+              <input id="photosInput" type="file" name="photos" accept="image/*" multiple required>
+            </label>
+
+            <div class="preview-block" id="previewBlock">
+              <div class="preview-header">
+                <h3>Prévia das fotos</h3>
+                <p id="previewCounter">Nenhuma foto selecionada.</p>
+              </div>
+              <div id="photoPreview" class="photo-preview-grid"></div>
+            </div>
+
+            <div class="step-nav">
+              <button type="button" class="button button-secondary step-back-btn" data-back="2">← Voltar</button>
+              <button type="button" class="button step-next-btn" id="step3Next">Continuar →</button>
+            </div>
+          </div>
+
+          <!-- PASSO 4: PAGAMENTO -->
+          <div class="form-step hidden" id="step4">
+            <div class="step-section-title">
+              <h2>Pagamento via Pix</h2>
+              <p>Faça o Pix de <strong id="paymentAmountLabel">R$ 29,90</strong>, salve o comprovante e envie abaixo.</p>
+            </div>
+
+            <div class="pix-panel">
+              <div class="pix-info">
+                <p class="eyebrow">Chave Pix</p>
+                <div class="pix-key-box">
+                  <span id="pixKeyText">momentto.oficial@gmail.com</span>
+                  <button type="button" class="pix-copy-btn" id="pixCopyBtn" aria-label="Copiar chave Pix">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+                    </svg>
+                    Copiar
+                  </button>
+                </div>
+                <ul class="pix-steps">
+                  <li>Abra o app do seu banco</li>
+                  <li>Acesse Pix → Transferir</li>
+                  <li>Cole a chave acima (e-mail)</li>
+                  <li>Valor: <strong id="pixAmountLabel">R$ 29,90</strong></li>
+                  <li>Confirme e salve o comprovante</li>
+                </ul>
+              </div>
+              <div class="pix-qr-placeholder">
+                <div class="pix-qr-mock">
+                  <p>Chave Pix</p>
+                  <strong>momentto.oficial<br>@gmail.com</strong>
+                  <p class="pix-amount" id="pixMockAmount">R$ 29,90</p>
+                </div>
+              </div>
+            </div>
+
+            <label class="field upload-field">
+              <span>Comprovante de pagamento Pix <em class="required-mark">*</em></span>
+              <div class="upload-drop-inner upload-proof-inner">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"/>
+                </svg>
+                <p>Arraste o comprovante ou clique para selecionar</p>
+                <small>Imagem (JPG, PNG) ou PDF</small>
+              </div>
+              <input id="proofInput" type="file" name="paymentProof" accept="image/*,.pdf,application/pdf" required>
+            </label>
+
+            <div class="proof-preview" id="proofPreviewBox">
+              <p id="proofPreviewText">Nenhum comprovante enviado ainda.</p>
+            </div>
+
+            <button id="submitButton" class="button submit-button" type="submit">
+              <span id="submitLabel">Criar meu Momentto agora</span>
+              <span id="submitSpinner" class="spinner hidden" aria-hidden="true"></span>
+            </button>
+
+            <div id="formStatus" class="form-status" aria-live="polite"></div>
+
+            <div class="step-nav" style="margin-top:0">
+              <button type="button" class="button button-secondary step-back-btn" data-back="3">← Voltar</button>
+            </div>
+          </div>
+
+          <!-- RESULTADO -->
+          <section id="resultCard" class="result-card hidden" aria-live="polite">
+            <div class="result-header">
+              <p class="eyebrow">Momentto gerado com sucesso!</p>
+              <h2>Seu link e QR Code estão prontos.</h2>
+              <p>O conteúdo também foi enviado por e-mail. Você pode abrir o link agora ou escanear o QR Code.</p>
+            </div>
+            <a id="resultUrl" class="result-link" href="#" target="_blank" rel="noreferrer noopener"></a>
+            <div class="result-qr-wrap">
+              <img id="resultQr" class="result-qr" alt="QR Code do Momentto">
+              <button type="button" class="button button-secondary" id="downloadQrBtn">Baixar QR Code</button>
+            </div>
+            <div class="result-share">
+              <p>Compartilhe o link diretamente:</p>
+              <button type="button" class="share-btn share-whatsapp" id="shareWhatsapp">
+                WhatsApp
+              </button>
+              <button type="button" class="share-btn share-copy" id="shareCopy">
+                Copiar link
+              </button>
+            </div>
+          </section>
+
+        </form>
+      </section>
+    </main>
+
+    <!-- WHATSAPP FAB -->
+    <a href="https://wa.me/5511999999999?text=Olá!%20Tenho%20uma%20dúvida%20sobre%20o%20Momentto." class="whatsapp-fab" target="_blank" rel="noreferrer" aria-label="Falar no WhatsApp">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+    </a>
+
+    <script src="/assets/js/order.js" defer></script>
+  </body>
+</html>

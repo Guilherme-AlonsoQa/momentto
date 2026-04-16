@@ -1,0 +1,14 @@
+[build]
+  publish = "frontend"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+[functions]
+  included_files = ["frontend/templates/**"]
+
+[functions."api"]
+  external_node_modules = ["express", "multer", "archiver", "qrcode", "nodemailer", "dotenv", "serverless-http"]

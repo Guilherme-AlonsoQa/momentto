@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido | Momentto</title>
+    <meta
+      name="description"
+      content="Escolha um modelo da Momentto, envie fotos, mensagem e comprovante Pix para receber a página pronta por e-mail."
+    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="/assets/css/style.css">
+  </head>
+  <body class="order-page">
+    <header class="site-header">
+      <a class="brand" href="/">
+        <img src="/assets/logo.svg" alt="Logo Momentto">
+        <span>Momentto</span>
+      </a>
+
+      <nav class="site-nav">
+        <a href="/">Início</a>
+        <a href="/#modelos">Modelos</a>
+      </nav>
+    </header>
+
+    <main class="order-layout order-layout-premium">
+      <section class="order-intro order-intro-premium">
+        <div class="order-intro-copy">
+          <p class="eyebrow">Pedido em página única</p>
+          <h1>Seu cliente escolhe o estilo, envia tudo aqui e recebe a entrega pronta no e-mail.</h1>
+          <p>
+            Abaixo estão os três modelos disponíveis com uma prévia visual. Depois é só preencher os nomes, a
+            dedicatória, subir as fotos e anexar o comprovante Pix para a geração começar.
+          </p>
+
+          <div class="mini-benefits">
+            <span>Sem redirecionamento</span>
+            <span>Prévia visual antes do envio</span>
+            <span>Entrega automática com QR Code</span>
+          </div>
+        </div>
+
+        <aside class="order-side-card">
+          <p class="eyebrow">Fluxo da entrega</p>
+          <ol class="side-steps">
+            <li>Escolha o modelo ideal para a ocasião</li>
+            <li>Envie fotos, dedicatória e dados do presente</li>
+            <li>Confirme o pagamento com comprovante Pix</li>
+            <li>Receba o link e o QR Code por e-mail</li>
+          </ol>
+        </aside>
+      </section>
+
+      <section class="order-shell">
+        <form id="orderForm" class="order-form" enctype="multipart/form-data" novalidate>
+          <fieldset class="template-selector">
+            <legend>Escolha o template</legend>
+
+            <div class="template-selector-grid">
+              <label class="template-option">
+                <input type="radio" name="template" value="namorados" checked>
+                <span class="template-option-card template-love">
+                  <span class="template-option-preview preview-love-photo"></span>
+                  <strong>Namorados</strong>
+                  <small>Dourado + rosa suave</small>
+                  <em>Romântico, íntimo e luminoso.</em>
+                </span>
+              </label>
+
+              <label class="template-option">
+                <input type="radio" name="template" value="pais">
+                <span class="template-option-card template-fathers">
+                  <span class="template-option-preview preview-father-photo"></span>
+                  <strong>Dia dos Pais</strong>
+                  <small>Azul marinho + dourado</small>
+                  <em>Sóbrio, forte e afetivo.</em>
+                </span>
+              </label>
+
+              <label class="template-option">
+                <input type="radio" name="template" value="maes">
+                <span class="template-option-card template-mothers">
+                  <span class="template-option-preview preview-mother-photo"></span>
+                  <strong>Dia das Mães</strong>
+                  <small>Lilás + dourado</small>
+                  <em>Delicado, acolhedor e elegante.</em>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
+          <section class="sample-preview-panel">
+            <div class="preview-panel-copy">
+              <p class="eyebrow">Como o presente pode ficar</p>
+              <h2>Uma composição pensada para emocionar na abertura do link.</h2>
+              <p>
+                O conteúdo final muda de acordo com as suas fotos e mensagem, mas a estrutura visual segue esse padrão:
+                capa, texto dedicado, galeria e assinatura.
+              </p>
+            </div>
+            <div class="sample-preview-stage" id="samplePreviewStage">
+              <article class="sample-preview-card template-love" data-template-preview="namorados">
+                <div class="sample-preview-media preview-love-photo"></div>
+                <div class="sample-preview-body">
+                  <p class="preview-kicker">Namorados</p>
+                  <h3>Mariana</h3>
+                  <p>Um design romântico para abrir no celular e guardar no coração.</p>
+                </div>
+              </article>
+
+              <article class="sample-preview-card template-fathers hidden" data-template-preview="pais">
+                <div class="sample-preview-media preview-father-photo"></div>
+                <div class="sample-preview-body">
+                  <p class="preview-kicker">Dia dos Pais</p>
+                  <h3>Meu herói</h3>
+                  <p>Uma homenagem elegante, forte e cheia de memória afetiva.</p>
+                </div>
+              </article>
+
+              <article class="sample-preview-card template-mothers hidden" data-template-preview="maes">
+                <div class="sample-preview-media preview-mother-photo"></div>
+                <div class="sample-preview-body">
+                  <p class="preview-kicker">Dia das Mães</p>
+                  <h3>Com amor</h3>
+                  <p>Um visual delicado para mensagens de carinho e gratidão.</p>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <div class="form-grid">
+            <label class="field">
+              <span>Nome de quem recebe</span>
+              <input type="text" name="recipientName" placeholder="Ex.: Mariana" required>
+            </label>
+
+            <label class="field">
+              <span>Nome de quem envia</span>
+              <input type="text" name="senderName" placeholder="Ex.: Lucas" required>
+            </label>
+
+            <label class="field">
+              <span>Data especial</span>
+              <input type="text" name="specialDate" placeholder="Ex.: 12 de junho de 2026">
+            </label>
+
+            <label class="field">
+              <span>E-mail do cliente</span>
+              <input type="email" name="email" placeholder="voce@email.com" required>
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Mensagem</span>
+            <textarea
+              name="message"
+              rows="7"
+              minlength="20"
+              placeholder="Escreva uma dedicatória emocionante com pelo menos 20 caracteres."
+              required
+            ></textarea>
+          </label>
+
+          <div class="upload-grid">
+            <label class="field upload-field">
+              <span>Fotos do Momentto</span>
+              <input id="photosInput" type="file" name="photos" accept="image/*" multiple required>
+              <small>Envie até 10 imagens. A prévia aparece abaixo antes do envio.</small>
+            </label>
+
+            <label class="field upload-field">
+              <span>Comprovante de pagamento Pix</span>
+              <input id="proofInput" type="file" name="paymentProof" accept="image/*,.pdf,application/pdf" required>
+              <small>Formato aceito: imagem ou PDF.</small>
+            </label>
+          </div>
+
+          <div class="preview-block">
+            <div class="preview-header">
+              <h2>Prévia das fotos enviadas</h2>
+              <p id="previewCounter">Nenhuma foto selecionada.</p>
+            </div>
+            <div id="photoPreview" class="photo-preview-grid"></div>
+          </div>
+
+          <div class="proof-preview">
+            <h2>Comprovante recebido</h2>
+            <p id="proofPreviewText">Nenhum comprovante enviado ainda.</p>
+          </div>
+
+          <button id="submitButton" class="button submit-button" type="submit">Criar meu Momentto</button>
+
+          <div id="formStatus" class="form-status" aria-live="polite"></div>
+
+          <section id="resultCard" class="result-card hidden" aria-live="polite">
+            <div>
+              <p class="eyebrow">Momentto gerado</p>
+              <h2>Seu link e QR Code estão prontos.</h2>
+              <p>
+                O conteúdo também foi enviado por e-mail. Você pode abrir o link imediatamente ou compartilhar o QR Code.
+              </p>
+            </div>
+            <a id="resultUrl" class="result-link" href="#" target="_blank" rel="noreferrer noopener"></a>
+            <img id="resultQr" class="result-qr" alt="QR Code gerado para o Momentto">
+          </section>
+        </form>
+      </section>
+    </main>
+
+    <script src="/assets/js/order.js" defer></script>
+  </body>
+</html>

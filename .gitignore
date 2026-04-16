@@ -1,0 +1,22 @@
+# Dependências
+node_modules/
+
+# Variáveis de ambiente
+backend/.env
+.env
+
+# Arquivos gerados em runtime
+backend/uploads/
+backend/generated/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporários
+*.tmp
+*.zip

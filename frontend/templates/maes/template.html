@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Momentto — {{recipientName}}</title>
+    <meta property="og:title" content="Momentto para {{recipientName}}">
+    <meta property="og:description" content="Uma homenagem especial criada com amor.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg: #fcf8ff;
+        --surface: rgba(252, 248, 255, 0.92);
+        --text: #28202e;
+        --muted: #7a6880;
+        --gold: #c9a84c;
+        --gold-soft: rgba(201, 168, 76, 0.12);
+        --lilac: #b69cd7;
+        --lilac-soft: rgba(182, 156, 215, 0.14);
+        --border: rgba(182, 156, 215, 0.24);
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        background:
+          radial-gradient(ellipse at 5% 0%, rgba(182, 156, 215, 0.2), transparent 36%),
+          radial-gradient(ellipse at 95% 0%, rgba(215, 155, 177, 0.14), transparent 30%),
+          radial-gradient(ellipse at 50% 100%, rgba(201, 168, 76, 0.1), transparent 40%),
+          linear-gradient(180deg, #fefbff 0%, #f8f3fe 40%, #f4eefc 100%);
+        color: var(--text);
+        font-family: "Manrope", sans-serif;
+        min-height: 100vh;
+      }
+
+      main {
+        width: min(900px, calc(100vw - 24px));
+        margin: 0 auto;
+        padding: 40px 0 80px;
+        display: grid;
+        gap: 16px;
+      }
+
+      section {
+        border-radius: 28px;
+        padding: 36px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        box-shadow: 0 20px 60px rgba(100, 60, 120, 0.09);
+      }
+
+      /* HERO */
+      .hero {
+        text-align: center;
+        padding: 64px 40px 56px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 20% 30%, rgba(182, 156, 215, 0.22), transparent 40%),
+          radial-gradient(circle at 80% 70%, rgba(201, 168, 76, 0.12), transparent 38%);
+        pointer-events: none;
+      }
+
+      .hero-eyebrow {
+        display: inline-block;
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--lilac);
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      h1 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(50px, 9.5vw, 92px);
+        font-weight: 500;
+        line-height: 0.92;
+        letter-spacing: -0.02em;
+        color: var(--text);
+        position: relative;
+        margin-bottom: 24px;
+      }
+
+      .hero-ornament {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .hero-ornament::before,
+      .hero-ornament::after {
+        content: "";
+        width: 48px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--lilac));
+      }
+
+      .hero-ornament::after {
+        background: linear-gradient(90deg, var(--lilac), transparent);
+      }
+
+      .hero-ornament span {
+        font-size: 18px;
+        color: var(--lilac);
+      }
+
+      .hero-date {
+        font-family: "Cormorant Garamond", serif;
+        font-style: italic;
+        font-size: 21px;
+        color: var(--muted);
+      }
+
+      /* MENSAGEM */
+      .message-section {
+        position: relative;
+        padding: 36px;
+      }
+
+      .message-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        border-radius: 28px 28px 0 0;
+        background: linear-gradient(90deg, var(--lilac), var(--gold), var(--lilac));
+      }
+
+      .message-label {
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--lilac);
+        margin-bottom: 14px;
+        display: block;
+      }
+
+      .message-section h2 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 30px;
+        font-weight: 500;
+        margin-bottom: 18px;
+        color: var(--text);
+      }
+
+      .message-body {
+        font-size: 18px;
+        line-height: 1.9;
+        color: var(--muted);
+        font-style: italic;
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      /* GALERIA */
+      .gallery-section h2 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 28px;
+        font-weight: 500;
+        margin-bottom: 24px;
+        color: var(--text);
+        text-align: center;
+      }
+
+      .gallery-ornament {
+        width: 48px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--lilac), transparent);
+        margin: 0 auto 24px;
+      }
+
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 14px;
+      }
+
+      .gallery-card { margin: 0; }
+
+      .gallery-card img {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        display: block;
+        transition: transform 300ms ease, box-shadow 300ms ease;
+      }
+
+      .gallery-card img:hover {
+        transform: scale(1.03);
+        box-shadow: 0 16px 40px rgba(100, 60, 120, 0.18);
+      }
+
+      .gallery-empty { color: var(--muted); font-style: italic; padding: 24px 0; text-align: center; }
+
+      /* ASSINATURA */
+      .signature-section {
+        text-align: center;
+        padding: 48px 40px;
+        background: linear-gradient(135deg, var(--lilac-soft), rgba(201, 168, 76, 0.06));
+      }
+
+      .signature-petal {
+        font-size: 28px;
+        margin-bottom: 12px;
+        opacity: 0.7;
+      }
+
+      .signature-label {
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 14px;
+        display: block;
+      }
+
+      .signature-name {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(32px, 5vw, 56px);
+        font-weight: 500;
+        font-style: italic;
+        color: var(--lilac);
+        line-height: 1;
+        letter-spacing: -0.01em;
+      }
+
+      /* FOOTER */
+      .page-footer {
+        text-align: center;
+        padding: 20px;
+        border-radius: 18px;
+        background: var(--gold-soft);
+        border: 1px solid rgba(201, 168, 76, 0.14);
+      }
+
+      .page-footer p { font-size: 12px; color: var(--muted); letter-spacing: 0.08em; }
+      .page-footer a { color: var(--gold); font-weight: 700; text-decoration: none; }
+
+      @media (max-width: 600px) {
+        section { padding: 24px 20px; }
+        .hero { padding: 48px 24px 42px; }
+        .message-section { padding: 28px 20px; }
+        .signature-section { padding: 36px 20px; }
+        .gallery-card img { height: 180px; }
+        .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+
+      <section class="hero">
+        <div class="hero-eyebrow">Momentto · Dia das Mães</div>
+        <h1>{{recipientName}}</h1>
+        <div class="hero-ornament"><span>✿</span></div>
+        <div class="hero-date">{{date}}</div>
+      </section>
+
+      <section class="message-section">
+        <span class="message-label">Mensagem especial</span>
+        <h2>Para você, mãe.</h2>
+        <div class="message-body">{{message}}</div>
+      </section>
+
+      <section class="gallery-section">
+        <h2>Memórias em imagens</h2>
+        <div class="gallery-ornament"></div>
+        {{photos}}
+      </section>
+
+      <section class="signature-section">
+        <div class="signature-petal">✿</div>
+        <span class="signature-label">Com todo o meu amor</span>
+        <div class="signature-name">{{senderName}}</div>
+      </section>
+
+      <div class="page-footer">
+        <p>Criado com carinho em <a href="https://momentto.netlify.app" target="_blank">momentto.netlify.app</a> · Este link é permanente e não expira.</p>
+      </div>
+
+    </main>
+  </body>
+</html>
