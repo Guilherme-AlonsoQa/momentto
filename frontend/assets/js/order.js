@@ -132,10 +132,9 @@ function goToStep(n) {
     });
   }
 
-  const target = document.getElementById("stepIndicator") || document.querySelector(".order-shell");
-  if (target) {
-    const offset = target.getBoundingClientRect().top + window.scrollY - 80;
-    window.scrollTo({ top: Math.max(0, offset), behavior: "smooth" });
+  const scrollTarget = stepIndicator || document.querySelector(".order-shell");
+  if (scrollTarget) {
+    scrollTarget.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   if (currentStep === 4) {
