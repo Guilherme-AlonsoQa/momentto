@@ -449,8 +449,6 @@ photoDropZone?.addEventListener("drop", (e) => {
   renderPhotoPreview(collectedFiles);
 });
 
-photoDropZone?.addEventListener("click", () => photosInput?.click());
-
 // ---- Init ----
 initPlanFromUrl();
 syncTemplatePreview();
