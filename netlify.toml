@@ -12,3 +12,15 @@
 
 [functions."api"]
   external_node_modules = ["express", "multer", "archiver", "qrcode", "nodemailer", "dotenv", "serverless-http"]
+
+# Agente 1: Limpeza automática de sites de teste
+# Roda toda noite às 03h UTC (00h de Brasília)
+[functions."cleanup-sites"]
+  schedule = "0 3 * * *"
+  external_node_modules = ["nodemailer"]
+
+# Agente 2: Monitor de uso do Netlify
+# Roda toda manhã às 09h UTC (06h de Brasília)
+[functions."monitor-netlify"]
+  schedule = "0 9 * * *"
+  external_node_modules = ["nodemailer"]
