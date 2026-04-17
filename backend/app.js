@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config({ path: path.join(__dirname, ".env") });
 
 const orderRouter = require("./routes/order");
+const pixRouter   = require("./routes/pix");
 
 function createApp() {
   const app = express();
@@ -25,6 +26,7 @@ function createApp() {
   });
 
   app.use("/api/orders", orderRouter);
+  app.use("/api/pix",    pixRouter);
 
   app.use((err, _req, res, _next) => {
     console.error(err);

@@ -99,7 +99,7 @@
             <li>Selecione o modelo para a ocasião</li>
             <li>Preencha nomes, data e mensagem</li>
             <li>Envie <span id="sidePhotoHint">até 3 fotos</span> do presente</li>
-            <li>Pague <span id="sidePriceHint">R$ 29,90</span> via Pix e anexe o comprovante</li>
+            <li>Pague <span id="sidePriceHint">R$ 29,90</span> via Pix — confirmação automática</li>
             <li>Receba o link e o QR Code por e-mail ✓</li>
           </ol>
         </aside>
@@ -325,67 +325,72 @@
 
           <!-- PASSO 4: PAGAMENTO -->
           <div class="form-step hidden" id="step4">
-            <div class="step-section-title">
-              <h2>Pagamento via Pix</h2>
-              <p>Faça o Pix de <strong id="paymentAmountLabel">R$ 29,90</strong>, salve o comprovante e envie abaixo.</p>
+
+            <!-- Gerando QR Code (estado inicial) -->
+            <div id="pixLoading" class="pix-generating">
+              <span class="spinner pix-generating-spinner" aria-hidden="true"></span>
+              <p>Gerando seu QR Code Pix…</p>
             </div>
 
-            <div class="pix-panel">
-              <div class="pix-info">
-                <p class="eyebrow">Chave Pix</p>
-                <div class="pix-key-box">
-                  <span id="pixKeyText">momentto.oficial@gmail.com</span>
-                  <button type="button" class="pix-copy-btn" id="pixCopyBtn" aria-label="Copiar chave Pix">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
-                    </svg>
-                    Copiar
-                  </button>
+            <!-- Painel de pagamento (após receber o QR do Mercado Pago) -->
+            <div id="pixPaymentPanel" class="hidden">
+              <div class="step-section-title">
+                <h2>Pagamento via Pix</h2>
+                <p>Escaneie o QR Code ou copie o código para pagar <strong id="paymentAmountLabel">R$ 29,90</strong>.</p>
+              </div>
+
+              <div class="pix-panel">
+                <div class="pix-info">
+                  <p class="eyebrow">Pix Copia e Cola</p>
+                  <div class="pix-key-box">
+                    <span id="pixCopiaCola" class="pix-copiacola-text"></span>
+                    <button type="button" class="pix-copy-btn" id="pixCopyBtn" aria-label="Copiar código Pix">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+                      </svg>
+                      Copiar
+                    </button>
+                  </div>
+                  <ul class="pix-steps">
+                    <li>Abra o app do seu banco</li>
+                    <li>Acesse Pix → Pagar com QR Code</li>
+                    <li>Escaneie o QR ou use Copia e Cola</li>
+                    <li>Valor: <strong id="pixAmountLabel">R$ 29,90</strong></li>
+                    <li>Confirme o pagamento</li>
+                  </ul>
+                  <p class="pix-auto-note">Após confirmar, seu Momentto é gerado automaticamente.</p>
                 </div>
-                <ul class="pix-steps">
-                  <li>Abra o app do seu banco</li>
-                  <li>Acesse Pix → Transferir</li>
-                  <li>Cole a chave acima (e-mail)</li>
-                  <li>Valor: <strong id="pixAmountLabel">R$ 29,90</strong></li>
-                  <li>Confirme e salve o comprovante</li>
-                </ul>
-              </div>
-              <div class="pix-qr-placeholder">
-                <div class="pix-qr-mock">
-                  <p>Chave Pix</p>
-                  <strong>momentto.oficial<br>@gmail.com</strong>
-                  <p class="pix-amount" id="pixMockAmount">R$ 29,90</p>
+                <div class="pix-qr-block">
+                  <img id="pixQrCodeImg" class="pix-qr-img" alt="QR Code Pix">
                 </div>
               </div>
-            </div>
 
-            <label class="field upload-field">
-              <span>Comprovante de pagamento Pix <em class="required-mark">*</em></span>
-              <div class="upload-drop-inner upload-proof-inner">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"/>
-                </svg>
-                <p>Arraste o comprovante ou clique para selecionar</p>
-                <small>Imagem (JPG, PNG) ou PDF</small>
+              <div class="pix-polling-bar" id="pixPollingBar">
+                <span class="spinner-tiny" aria-hidden="true"></span>
+                <span id="pixPollingText">Aguardando confirmação do pagamento…</span>
               </div>
-              <input id="proofInput" type="file" name="paymentProof" accept="image/*,.pdf,application/pdf" required>
-            </label>
 
-            <div class="proof-preview" id="proofPreviewBox">
-              <p id="proofPreviewText">Nenhum comprovante enviado ainda.</p>
+              <div id="formStatus" class="form-status" aria-live="polite"></div>
+
+              <div class="step-nav">
+                <button type="button" class="button button-secondary step-back-btn" data-back="3">← Voltar</button>
+                <button type="button" class="button button-secondary" id="pixCheckBtn">Verificar pagamento</button>
+              </div>
             </div>
 
-            <button id="submitButton" class="button submit-button" type="submit">
-              <span id="submitLabel">Criar meu Momentto agora</span>
-              <span id="submitSpinner" class="spinner hidden" aria-hidden="true"></span>
-            </button>
-
-            <div id="formStatus" class="form-status" aria-live="polite"></div>
-
-            <div class="step-nav" style="margin-top:0">
-              <button type="button" class="button button-secondary step-back-btn" data-back="3">← Voltar</button>
+            <!-- Erro ao gerar Pix -->
+            <div id="pixErrorPanel" class="hidden">
+              <div class="step-section-title">
+                <h2>Não foi possível gerar o Pix.</h2>
+              </div>
+              <div id="pixErrorMsg" class="form-status error" aria-live="polite"></div>
+              <div class="step-nav">
+                <button type="button" class="button button-secondary step-back-btn" data-back="3">← Voltar</button>
+                <button type="button" class="button" id="pixRetryBtn">Tentar novamente</button>
+              </div>
             </div>
+
           </div>
 
           <!-- RESULTADO -->

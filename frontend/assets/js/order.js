@@ -14,28 +14,40 @@ const PLAN_CONFIG = {
 };
 
 // ---- Elementos base ----
-const orderForm        = document.getElementById("orderForm");
-const planInput        = document.getElementById("planInput");
-const photosInput      = document.getElementById("photosInput");
-const proofInput       = document.getElementById("proofInput");
-const photoPreview     = document.getElementById("photoPreview");
-const previewCounter   = document.getElementById("previewCounter");
-const proofPreviewText = document.getElementById("proofPreviewText");
-const formStatus       = document.getElementById("formStatus");
-const submitButton     = document.getElementById("submitButton");
-const submitLabel      = document.getElementById("submitLabel");
-const submitSpinner    = document.getElementById("submitSpinner");
-const resultCard       = document.getElementById("resultCard");
-const resultUrl        = document.getElementById("resultUrl");
-const resultQr         = document.getElementById("resultQr");
-const templateRadios   = document.querySelectorAll('input[name="template"]');
+const orderForm      = document.getElementById("orderForm");
+const planInput      = document.getElementById("planInput");
+const photosInput    = document.getElementById("photosInput");
+const photoPreview   = document.getElementById("photoPreview");
+const previewCounter = document.getElementById("previewCounter");
+const formStatus     = document.getElementById("formStatus");
+const resultCard     = document.getElementById("resultCard");
+const resultUrl      = document.getElementById("resultUrl");
+const resultQr       = document.getElementById("resultQr");
+const templateRadios     = document.querySelectorAll('input[name="template"]');
 const samplePreviewCards = document.querySelectorAll("[data-template-preview]");
+
+// ---- Elementos do fluxo Pix ----
+const pixLoading      = document.getElementById("pixLoading");
+const pixPaymentPanel = document.getElementById("pixPaymentPanel");
+const pixErrorPanel   = document.getElementById("pixErrorPanel");
+const pixErrorMsg     = document.getElementById("pixErrorMsg");
+const pixPollingBar   = document.getElementById("pixPollingBar");
+const pixPollingText  = document.getElementById("pixPollingText");
+const pixCheckBtn     = document.getElementById("pixCheckBtn");
+const pixRetryBtn     = document.getElementById("pixRetryBtn");
+const pixCopiaCola    = document.getElementById("pixCopiaCola");
+const pixQrCodeImg    = document.getElementById("pixQrCodeImg");
 
 // ---- Step indicator ----
 const stepIndicator = document.getElementById("stepIndicator");
 const formSteps     = document.querySelectorAll(".form-step");
 let currentStep = 1;
 const TOTAL_STEPS = 4;
+
+// ---- Estado do Pix ----
+let pixPaymentId  = null;
+let pixPollTimer  = null;
+let pixPollActive = false;
 
 // ---- Inicialização do plano via URL param ----
 function initPlanFromUrl() {
@@ -53,20 +65,17 @@ function applyPlan(plan) {
 
   if (planInput) planInput.value = plan;
 
-  // Atualizar cards de plano
   document.querySelectorAll(".plan-option").forEach((el) => {
     el.classList.toggle("plan-option-active", el.dataset.plan === plan);
   });
 
   const cfg = PLAN_CONFIG[plan];
 
-  // Atualizar hints na sidebar
   const sidePhotoHint = document.getElementById("sidePhotoHint");
   const sidePriceHint = document.getElementById("sidePriceHint");
   if (sidePhotoHint) sidePhotoHint.textContent = `até ${cfg.maxPhotos} foto${cfg.maxPhotos > 1 ? "s" : ""}`;
   if (sidePriceHint) sidePriceHint.textContent = cfg.price;
 
-  // Atualizar hint no step 3
   const photoStepHint = document.getElementById("photoStepHint");
   if (photoStepHint) {
     photoStepHint.textContent = `Envie até ${cfg.maxPhotos} foto${cfg.maxPhotos > 1 ? "s" : ""}. ${
@@ -76,21 +85,16 @@ function applyPlan(plan) {
     }`;
   }
 
-  // Atualizar hint no drop zone
   const photoDropHint = document.getElementById("photoDropHint");
   if (photoDropHint) {
     photoDropHint.textContent = `JPG, PNG, WEBP — até ${cfg.maxPhotos} foto${cfg.maxPhotos > 1 ? "s" : ""}, 10MB cada`;
   }
 
-  // Atualizar valores no pagamento
   const paymentAmountLabel = document.getElementById("paymentAmountLabel");
   const pixAmountLabel     = document.getElementById("pixAmountLabel");
-  const pixMockAmount      = document.getElementById("pixMockAmount");
   if (paymentAmountLabel) paymentAmountLabel.textContent = cfg.price;
   if (pixAmountLabel)     pixAmountLabel.textContent     = cfg.price;
-  if (pixMockAmount)      pixMockAmount.textContent      = cfg.price;
 
-  // Se já há fotos acumuladas, revalidar
   if (collectedFiles.length > cfg.maxPhotos) {
     setStatus(`O ${cfg.label} aceita no máximo ${cfg.maxPhotos} foto${cfg.maxPhotos > 1 ? "s" : ""}. As fotos excedentes foram removidas.`, "error");
     collectedFiles = collectedFiles.slice(0, cfg.maxPhotos);
@@ -128,11 +132,14 @@ function goToStep(n) {
     });
   }
 
-  // Rola até o step indicator para manter o contexto visível
   const target = document.getElementById("stepIndicator") || document.querySelector(".order-shell");
   if (target) {
     const offset = target.getBoundingClientRect().top + window.scrollY - 80;
     window.scrollTo({ top: Math.max(0, offset), behavior: "smooth" });
+  }
+
+  if (currentStep === 4) {
+    initPixPayment();
   }
 }
 
@@ -185,8 +192,13 @@ document.getElementById("step3Next")?.addEventListener("click", () => {
 
 document.querySelectorAll(".step-back-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
+    const backTo = parseInt(btn.dataset.back, 10);
+    if (currentStep === 4) {
+      stopPixPolling();
+      resetPixState();
+    }
     setStatus("");
-    goToStep(parseInt(btn.dataset.back, 10));
+    goToStep(backTo);
   });
 });
 
@@ -252,7 +264,6 @@ function renderPhotoPreview(files) {
 function mergeIntoCollected(newFiles) {
   const maxPhotos = PLAN_CONFIG[selectedPlan].maxPhotos;
 
-  // Evitar duplicatas por nome+tamanho
   const toAdd = newFiles.filter(
     (nf) => !collectedFiles.some((ef) => ef.name === nf.name && ef.size === nf.size)
   );
@@ -280,16 +291,6 @@ photosInput?.addEventListener("change", () => {
   renderPhotoPreview(collectedFiles);
 });
 
-// ---- Preview do comprovante ----
-proofInput?.addEventListener("change", () => {
-  const file = proofInput.files?.[0];
-  if (proofPreviewText) {
-    proofPreviewText.textContent = file
-      ? `Comprovante selecionado: ${file.name}`
-      : "Nenhum comprovante enviado ainda.";
-  }
-});
-
 // ---- Contador de caracteres da mensagem ----
 const msgArea    = orderForm?.elements.message;
 const msgCounter = document.getElementById("msgCounter");
@@ -302,10 +303,153 @@ msgArea?.addEventListener("input", () => {
   }
 });
 
-// ---- Copiar chave Pix ----
+// ---- Status ----
+function setStatus(message, type = "") {
+  if (formStatus) {
+    formStatus.textContent = message;
+    formStatus.className = `form-status ${type}`.trim();
+  }
+}
+
+// ====== FLUXO PIX ======
+
+// ---- Resetar painel Pix para estado inicial ----
+function resetPixState() {
+  pixPaymentId = null;
+  if (pixLoading)      pixLoading.classList.remove("hidden");
+  if (pixPaymentPanel) pixPaymentPanel.classList.add("hidden");
+  if (pixErrorPanel)   pixErrorPanel.classList.add("hidden");
+  if (pixQrCodeImg)    { pixQrCodeImg.src = ""; pixQrCodeImg.style.display = "none"; }
+  if (pixCopiaCola)    pixCopiaCola.textContent = "";
+  if (pixPollingText)  pixPollingText.textContent = "Aguardando confirmação do pagamento…";
+  if (pixPollingBar) {
+    pixPollingBar.style.background  = "";
+    pixPollingBar.style.borderColor = "";
+  }
+}
+
+// ---- Parar polling ----
+function stopPixPolling() {
+  pixPollActive = false;
+  if (pixPollTimer) {
+    clearTimeout(pixPollTimer);
+    pixPollTimer = null;
+  }
+}
+
+// ---- Verificar status do pagamento (chamado em loop) ----
+async function checkPixStatus() {
+  if (!pixPaymentId || !pixPollActive) return;
+
+  try {
+    const res  = await fetch(`/api/pix/status/${pixPaymentId}`);
+    const data = await res.json();
+
+    if (!res.ok || !data.ok) {
+      throw new Error(data.error || "Erro ao verificar pagamento.");
+    }
+
+    const status = data.status;
+
+    if (status === "approved") {
+      stopPixPolling();
+
+      if (pixPollingBar) {
+        pixPollingBar.style.background  = "rgba(64,102,56,0.12)";
+        pixPollingBar.style.borderColor = "rgba(64,102,56,0.4)";
+      }
+      if (pixPollingText) pixPollingText.textContent = "Pagamento confirmado! Gerando seu Momentto…";
+
+      if (resultUrl) { resultUrl.href = data.url; resultUrl.textContent = data.url; }
+      if (resultQr)  resultQr.src = data.qrBase64;
+      resultCard?.classList.remove("hidden");
+
+      setStatus("Pedido concluído! Seu link também foi enviado por e-mail.", "success");
+      resultCard?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      setupDownloadQr(data.qrBase64);
+      setupShareButtons(data.url);
+      return;
+    }
+
+    if (status === "rejected" || status === "cancelled") {
+      stopPixPolling();
+      setStatus("Pagamento não aprovado. Clique em 'Tentar novamente' para gerar um novo Pix.", "error");
+      return;
+    }
+
+    // Ainda pendente — re-agendar
+    if (pixPollActive) {
+      pixPollTimer = setTimeout(checkPixStatus, 3000);
+    }
+
+  } catch (error) {
+    if (pixPollActive) {
+      pixPollTimer = setTimeout(checkPixStatus, 5000);
+    }
+    setStatus(error.message, "error");
+  }
+}
+
+// ---- Iniciar polling automático ----
+function startPixPolling() {
+  stopPixPolling();
+  pixPollActive = true;
+  pixPollTimer  = setTimeout(checkPixStatus, 3000);
+}
+
+// ---- Montar FormData com dados atuais do formulário ----
+function buildPixFormData() {
+  const fd = new FormData();
+  fd.append("plan",          selectedPlan);
+  fd.append("template",      document.querySelector('input[name="template"]:checked')?.value || "");
+  fd.append("recipientName", orderForm.elements.recipientName?.value.trim() || "");
+  fd.append("senderName",    orderForm.elements.senderName?.value.trim()    || "");
+  fd.append("email",         orderForm.elements.email?.value.trim()         || "");
+  fd.append("specialDate",   orderForm.elements.specialDate?.value.trim()   || "");
+  fd.append("message",       orderForm.elements.message?.value.trim()       || "");
+  collectedFiles.forEach((f) => fd.append("photos", f));
+  return fd;
+}
+
+// ---- Iniciar pagamento Pix ----
+async function initPixPayment() {
+  stopPixPolling();
+  resetPixState();
+  setStatus("");
+
+  try {
+    const res  = await fetch("/api/pix/create", { method: "POST", body: buildPixFormData() });
+    const data = await res.json();
+
+    if (!res.ok || !data.ok) {
+      throw new Error(data.error || "Não foi possível gerar o Pix.");
+    }
+
+    pixPaymentId = data.paymentId;
+
+    if (pixCopiaCola) pixCopiaCola.textContent = data.pixQrCode;
+    if (pixQrCodeImg) {
+      pixQrCodeImg.src = data.pixQrCodeBase64;
+      pixQrCodeImg.style.display = "block";
+    }
+
+    if (pixLoading)      pixLoading.classList.add("hidden");
+    if (pixPaymentPanel) pixPaymentPanel.classList.remove("hidden");
+
+    startPixPolling();
+
+  } catch (error) {
+    if (pixLoading)    pixLoading.classList.add("hidden");
+    if (pixErrorPanel) pixErrorPanel.classList.remove("hidden");
+    if (pixErrorMsg)   pixErrorMsg.textContent = error.message;
+  }
+}
+
+// ---- Botão: copiar código Pix Copia e Cola ----
 document.getElementById("pixCopyBtn")?.addEventListener("click", () => {
-  const key = document.getElementById("pixKeyText")?.textContent || "";
-  navigator.clipboard.writeText(key).then(() => {
+  const code = pixCopiaCola?.textContent || "";
+  navigator.clipboard.writeText(code).then(() => {
     const btn = document.getElementById("pixCopyBtn");
     if (btn) {
       const original = btn.innerHTML;
@@ -319,73 +463,26 @@ document.getElementById("pixCopyBtn")?.addEventListener("click", () => {
       }, 2000);
     }
   }).catch(() => {
-    const keyEl = document.getElementById("pixKeyText");
-    if (keyEl) {
+    if (pixCopiaCola) {
       const range = document.createRange();
-      range.selectNode(keyEl);
+      range.selectNode(pixCopiaCola);
       window.getSelection().removeAllRanges();
       window.getSelection().addRange(range);
     }
   });
 });
 
-// ---- Status ----
-function setStatus(message, type = "") {
-  if (formStatus) {
-    formStatus.textContent = message;
-    formStatus.className = `form-status ${type}`.trim();
-  }
-}
+// ---- Botão: verificar pagamento manualmente ----
+pixCheckBtn?.addEventListener("click", () => {
+  stopPixPolling();
+  if (pixPollingText) pixPollingText.textContent = "Verificando…";
+  pixPollActive = true;
+  checkPixStatus();
+});
 
-// ---- Loading state ----
-function setLoading(loading) {
-  submitButton.disabled = loading;
-  if (submitLabel) submitLabel.textContent = loading ? "Gerando seu Momentto..." : "Criar meu Momentto agora";
-  if (submitSpinner) submitSpinner.classList.toggle("hidden", !loading);
-}
-
-// ---- Submit ----
-orderForm?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  resultCard?.classList.add("hidden");
-
-  const proof     = proofInput?.files?.[0];
-  const message   = orderForm.elements.message?.value.trim();
-  const maxPhotos = PLAN_CONFIG[selectedPlan].maxPhotos;
-
-  if (collectedFiles.length === 0)          { setStatus("Envie pelo menos uma foto.", "error"); return; }
-  if (collectedFiles.length > maxPhotos)    { setStatus(`Máximo ${maxPhotos} foto${maxPhotos > 1 ? "s" : ""} para o Plano ${PLAN_CONFIG[selectedPlan].label}.`, "error"); return; }
-  if (!proof)                       { setStatus("Envie o comprovante de pagamento Pix.", "error"); return; }
-  if (message.length < 20)          { setStatus("A mensagem precisa ter no mínimo 20 caracteres.", "error"); return; }
-
-  const formData = new FormData(orderForm);
-
-  setLoading(true);
-  setStatus("Montando sua página, publicando e gerando o QR Code… aguarde alguns instantes.");
-
-  try {
-    const response = await fetch("/api/orders", { method: "POST", body: formData });
-    const payload  = await response.json();
-
-    if (!response.ok || !payload.ok) {
-      throw new Error(payload.error || "Não foi possível concluir seu pedido.");
-    }
-
-    if (resultUrl) { resultUrl.href = payload.url; resultUrl.textContent = payload.url; }
-    if (resultQr)  resultQr.src = payload.qrBase64;
-    resultCard?.classList.remove("hidden");
-
-    setStatus("Pedido concluído! Seu link também foi enviado por e-mail.", "success");
-    resultCard?.scrollIntoView({ behavior: "smooth", block: "start" });
-
-    setupDownloadQr(payload.qrBase64);
-    setupShareButtons(payload.url);
-
-  } catch (error) {
-    setStatus(error.message, "error");
-  } finally {
-    setLoading(false);
-  }
+// ---- Botão: tentar novamente após erro ----
+pixRetryBtn?.addEventListener("click", () => {
+  initPixPayment();
 });
 
 // ---- Download QR ----
